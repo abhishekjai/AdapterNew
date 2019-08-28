@@ -1,3 +1,4 @@
+let MongoDB = require('./MongoFunctions');
 class ArrayAdapter{
     storage = [];
     save(data){
@@ -41,6 +42,32 @@ class ArrayAdapter{
         })
     }
  }
+ class MongoAdapter{
+    async save(data){
+        try {
+            let user = await MongoDB.getDB().collection('user').insertOne(data);
+            return user.ops[0];
+            // return await MongoDB.getDB().collection('user').insertOne(data).ops[0];
+        } catch (error) {
+            throw error;
+        }
+    }
+    async show(){
+        try{
+            return await MongoDB.getDB().collection('user').find().toArray()
+        } catch(error){
+            throw error;
+        }   
+    }
+    async update(id,obj){
+        try{
+            let data = await MongoDB.getDB().collection('user').findOneAndUpdate({id:id},{$set:{name:obj}});
+            return data.value;
+        } catch(error){
+            throw error;
+        }
+    }
+ }
  class User{
     constructor(instance,schema){
         this.instance = instance
@@ -80,3 +107,20 @@ class ArrayAdapter{
     }
 }
 main();
+MongoDB.connectDB(async (err) => {
+    try{
+        if (err) throw err
+        const adapt = new MongoAdapter();
+        const user = new User(adapt,Schema);
+        console.log(await user.save(1,'abhishek'));
+        console.log(await user.save(2,'nambiar'));
+        console.log(await user.save(3,'jaiswal'));
+        console.log(await user.show());
+        console.log(await user.update(1,"yahoo"));
+        console.log(await user.show());
+    }catch (err){
+        console.log(err);
+    }
+    
+})
+// main();
