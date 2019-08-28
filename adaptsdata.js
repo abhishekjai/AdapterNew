@@ -72,11 +72,9 @@ class ArrayAdapter{
         console.log(await user.save(1,'abhishek'));
         console.log(await user.save(2,'jaiswal'));
         console.log(await user.save(3,'rohan'));
-        let data = await user.show()
-        console.log(data);
+        console.log(await user.show());
         console.log(await user.update(1,{name:'satyam'}));
-        data = await user.show();
-        console.log(data);
+        console.log(await user.show());
     } catch (err) {
         console.log(err);   
     }
