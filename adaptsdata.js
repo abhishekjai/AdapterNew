@@ -118,6 +118,7 @@ MongoDB.connectDB(async (err) => {
         console.log(await user.show());
         console.log(await user.update(1,"yahoo"));
         console.log(await user.show());
+        MongoDB.disconnectDB();
     }catch (err){
         console.log(err);
     }
