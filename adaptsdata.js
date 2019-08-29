@@ -1,6 +1,6 @@
-const connect = require("./mongof.js").connect;
-const get = require("./mongof.js").get;
-const close = require("./mongof.js").close;
+const mongoClient = require('mongodb').MongoClient;
+const dotenv = require('dotenv');
+dotenv.config({path:'./config.env'})
 class ArrayAdapter{
     storage = [];
     save(data){
@@ -45,24 +45,79 @@ class ArrayAdapter{
     }
  }
  class MongoAdapter{
+    _db; 
+    collection;
+    err;
+    async connect(){
+        let flag=5;
+        /* try {
+            if(this._db){
+                return 'Connection has been intilized before'
+            }else{
+                let db = await mongoClient.connect(process.env.DATABASE);
+                this._db=db;
+                this.collection=db.db('Users').collection('user');
+                return 'Connection has started'
+            }
+        } catch (error) {
+            throw error;
+        } */
+        while(flag && !this._db){
+            await _connect(this);
+            flag--;
+        }
+        async function _connect(refrence){
+           try {
+               let db = await mongoClient.connect(process.env.DATABASE);
+               refrence._db=db;
+               refrence.collection=db.db('Users').collection('user');
+           } catch (error) {
+               refrence.err=error;
+           }
+        }
+        if(!this._db){
+            throw this.err;
+        }
+
+    }
+    async close(){
+        try {
+            if(!this._db){
+                return 'Connection has not started so cant close the connection'
+            }else{
+                await this._db.close();
+            }
+        } catch (error) {
+            throw error;   
+        }
+    } 
     async save(data){
         try {
-            let user = await get().collection('user').insertOne(data);
-            return user.ops[0];
+            if(!this._db){
+                await this.connect();
+            }
+            let user = await this.collection.insertOne(data);
+            return user.ops[0];           
         } catch (error) {
             throw error;
         }
     }
     async show(){
         try{
-            return await get().collection('user').find().toArray()
+            if(!this._db){
+                await this.connect();
+            }
+            return await this.collection.find().toArray() 
         } catch(error){
             throw error;
         }   
     }
     async update(id,obj){
         try{
-            let data = await get().collection('user').findOneAndUpdate({id:id},{$set:{name:obj}});
+            if(!this._db){
+                await this.connect();
+            }
+            let data = await this.collection.findOneAndUpdate({id:id},{$set:{name:obj}});
             return data.value;
         } catch(error){
             throw error;
@@ -95,7 +150,6 @@ class ArrayAdapter{
  }
  const MongoMain = async ()=>{
     try {
-        await connect();
         const adapt = new MongoAdapter();
         const user = new User(adapt,Schema);
         console.log(await user.save(1,'abhishek'));
@@ -104,7 +158,7 @@ class ArrayAdapter{
         console.log(await user.show());
         console.log(await user.update(1,'satyam'));
         console.log(await user.show());
-        close();
+        adapt.close();
     } catch (err) {
         console.log(err);   
     }
@@ -114,7 +168,7 @@ const main = async ()=>{
     try {
         const adapt = new ArrayAdapter();
         const user = new User(adapt,Schema);
-        console.log(await user.save(1,'abhishek'));
+        console.log(user.save(1,'abhishek'));
         console.log(await user.save(2,'jaiswal'));
         console.log(await user.save(3,'rohan'));
         console.log(await user.show());
@@ -125,7 +179,3 @@ const main = async ()=>{
     }
 }
 main();
-
-
-
-// main();
