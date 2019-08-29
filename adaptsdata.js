@@ -114,7 +114,7 @@ const main = async ()=>{
     try {
         const adapt = new ArrayAdapter();
         const user = new User(adapt,Schema);
-        console.log(user.save(1,'abhishek'));
+        console.log(await user.save(1,'abhishek'));
         console.log(await user.save(2,'jaiswal'));
         console.log(await user.save(3,'rohan'));
         console.log(await user.show());
