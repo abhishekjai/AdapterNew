@@ -1,4 +1,6 @@
-let MongoDB = require('./MongoFunctions');
+const connect = require("./mongof.js").connect;
+const get = require("./mongof.js").get;
+const close = require("./mongof.js").close;
 class ArrayAdapter{
     storage = [];
     save(data){
@@ -45,23 +47,22 @@ class ArrayAdapter{
  class MongoAdapter{
     async save(data){
         try {
-            let user = await MongoDB.getDB().collection('user').insertOne(data);
+            let user = await get().collection('user').insertOne(data);
             return user.ops[0];
-            // return await MongoDB.getDB().collection('user').insertOne(data).ops[0];
         } catch (error) {
             throw error;
         }
     }
     async show(){
         try{
-            return await MongoDB.getDB().collection('user').find().toArray()
+            return await get().collection('user').find().toArray()
         } catch(error){
             throw error;
         }   
     }
     async update(id,obj){
         try{
-            let data = await MongoDB.getDB().collection('user').findOneAndUpdate({id:id},{$set:{name:obj}});
+            let data = await get().collection('user').findOneAndUpdate({id:id},{$set:{name:obj}});
             return data.value;
         } catch(error){
             throw error;
@@ -92,11 +93,28 @@ class ArrayAdapter{
         this.name=name;
     }
  }
- const main = async ()=>{
+ const MongoMain = async ()=>{
+    try {
+        await connect();
+        const adapt = new MongoAdapter();
+        const user = new User(adapt,Schema);
+        console.log(user.save(1,'abhishek'));
+        console.log(user.save(2,'jaiswal'));
+        console.log(user.save(3,'rohan'));
+        console.log(user.show());
+        console.log(user.update(1,'satyam'));
+        console.log(user.show());
+        close();
+    } catch (err) {
+        console.log(err);   
+    }
+ }
+MongoMain();
+const main = async ()=>{
     try {
         const adapt = new ArrayAdapter();
         const user = new User(adapt,Schema);
-        console.log(await user.save(1,'abhishek'));
+        console.log(user.save(1,'abhishek'));
         console.log(await user.save(2,'jaiswal'));
         console.log(await user.save(3,'rohan'));
         console.log(await user.show());
@@ -107,21 +125,7 @@ class ArrayAdapter{
     }
 }
 main();
-MongoDB.connectDB(async (err) => {
-    try{
-        if (err) throw err
-        const adapt = new MongoAdapter();
-        const user = new User(adapt,Schema);
-        console.log(await user.save(1,'abhishek'));
-        console.log(await user.save(2,'nambiar'));
-        console.log(await user.save(3,'jaiswal'));
-        console.log(await user.show());
-        console.log(await user.update(1,"yahoo"));
-        console.log(await user.show());
-        MongoDB.disconnectDB();
-    }catch (err){
-        console.log(err);
-    }
-    
-})
+
+
+
 // main();
