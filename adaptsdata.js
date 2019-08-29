@@ -62,6 +62,9 @@ class ArrayAdapter{
         } catch (error) {
             throw error;
         } */
+        if(this._db){
+            return this._db;
+        }
         while(flag && !this._db){
             await _connect(this);
             flag--;
