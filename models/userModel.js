@@ -2,10 +2,10 @@ const uniqid = require('uniqid');
 
 class User{
     
-    collection ='user'
-
+    
     constructor(instance){
         this.instance = instance;
+        this.collection ='user'
     }
 
     objCreator(name){

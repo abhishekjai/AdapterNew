@@ -1,15 +1,13 @@
 const dotenv       = require('dotenv');
 dotenv.config({path:'./config.env'});
-const mocha        = require('mocha');
-const assert       = require('assert');
-var expect         = require('chai').expect;
-var should         = require('chai').should();
+const expect       = require('chai').expect;
+const should       = require('chai').should();
 const userModel    = require('../models/userModel');
 const vehicleModel = require('../models/vehicleModel');
 const arrayAdapter = require('../adapters/arrayAdapter');
 const mongoAdapter = require('../adapters/mongoAdapter');
 
-describe('testing a mongo adapter',async function async (){
+describe('testing a usermongo adapter',async function async (){
     const adapt = new mongoAdapter();
     const user  = new userModel(adapt);
     it('update test',async function  (){       
@@ -33,13 +31,13 @@ describe('testing a mongo adapter',async function async (){
     })
 })
 
-describe('to a single connection', ()=>{
-    it('single connection', function(){
-        (() => new mongoAdapter()).should.throw(Error);        
-    })
-})
+// describe('to a single connection', ()=>{
+//     it('single connection', function(){
+//         (() => new mongoAdapter()).should.throw(Error);        
+//     })
+// })
 
-describe('testing a array adapter',async function async (){
+describe('testing a array user adapter',async function async (){
     const adapt = new arrayAdapter();
     const user  = new userModel(adapt);
     

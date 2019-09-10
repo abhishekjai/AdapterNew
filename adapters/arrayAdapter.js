@@ -1,6 +1,7 @@
 class ArrayAdapter{
-    storage = [];
-
+    constructor(){
+        this.storage=[];
+    }
     save(data){
         return new Promise((resolve,reject)=>{
 

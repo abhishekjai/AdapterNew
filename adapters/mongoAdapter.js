@@ -2,17 +2,14 @@ const mongoClient = require('mongodb').MongoClient;
 
 class MongoAdapter{
 
-    _db; 
-    collection;
-    err;
-    static instance=0;
-
     constructor(){
 
         if(MongoAdapter.instance==1){
             throw new Error("You can't make a another object");
         }
-
+        this._db; 
+        this.collection;
+        this.err;
         MongoAdapter.instance++;
 
     }
@@ -33,6 +30,7 @@ class MongoAdapter{
                let db              = await mongoClient.connect(process.env.DATABASE);
                refrence._db        = db;
                refrence.collection = db.db('Users').collection(typeObj.collection);
+               console.log("Connection Handled");
 
            } catch (error) {
 
@@ -114,5 +112,5 @@ class MongoAdapter{
     }
 
  }
-
+ MongoAdapter.instance=0;
  module.exports=MongoAdapter;

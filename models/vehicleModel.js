@@ -2,10 +2,9 @@ const uniqid  = require('uniqid');
 
 class Vehicle{
      
-    collection = 'vehicle';
-    
     constructor(instance){
        this.instance = instance;
+       this.collection = 'vehicle';
     }
 
     objCreator(name){
