@@ -59,6 +59,8 @@ class MongoAdapter{
 
                 MongoAdapter.instance = 0;
 
+                return true;
+
             }
         } catch (error) {
             throw error;   
@@ -102,7 +104,7 @@ class MongoAdapter{
                 await this.connect(typeObj);
             }
             
-            let data = await this.collection.findOneAndUpdate({id:id},{$set:{name:obj}});
+            let data = await this.collection.findOneAndUpdate({id:id},{$set:{name:obj}},{returnOriginal: false});
 
             return data.value;
 
